@@ -80,14 +80,14 @@ class _AuthenState extends State<Authen> {
 
   ShowText newTitle() {
     return ShowText(
-      text: 'Logo: 12345',
+      text: 'Logo: ',
       textStyle: MyConstant().h2Style(),
     );
   }
 
   SizedBox newlogo() {
     return const SizedBox(
-      width: 80,
+      width: 150,
       child: ShowImage(),
     );
   }
