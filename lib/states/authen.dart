@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:goodstudent/models/user_model.dart';
+import 'package:goodstudent/states/my_service.dart';
 import 'package:goodstudent/utility/my_constant.dart';
 import 'package:goodstudent/utility/my_dialog.dart';
 import 'package:goodstudent/widgets/show_button.dart';
@@ -44,10 +49,42 @@ class _AuthenState extends State<Authen> {
           if ((user?.isEmpty ?? true) || (password?.isEmpty ?? true)) {
             MyDialog(context: context).normalDialog(
                 title: 'Have Space ?', subTitle: 'Please Fill Every Blank');
-          } else {}
+          } else {
+            processCheckLogin();
+          }
         },
       ),
     );
+  }
+
+  Future<void> processCheckLogin() async {
+    String path =
+        'https://www.androidthai.in.th/goodstd/getUserWhereUserGame.php?isAdd=true&user=$user';
+    await Dio().get(path).then((value) {
+      if (value.toString() == 'null') {
+        MyDialog(context: context).normalDialog(
+            title: 'User False ?', subTitle: 'No $user in my Database');
+      } else {
+        for (var element in json.decode(value.data)) {
+          print('elament ==> $element');
+          UserModel userModel = UserModel.fromMap(element);
+          if (password == userModel.password) {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MyService(
+                    userModel: userModel,
+                  ),
+                ),
+                (route) => false);
+          } else {
+            MyDialog(context: context).normalDialog(
+                title: 'Password False',
+                subTitle: 'Please Tyr Again Password False');
+          }
+        }
+      }
+    });
   }
 
   Container formPassword() {
